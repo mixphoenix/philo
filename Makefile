@@ -1,6 +1,6 @@
 NAME	=	philo
 
-SRCS	= 	all/*.c main.c parsing.c
+SRCS	= 	all/*.c main.c
 
 OBJCT	=	${all:.c=.o}
 

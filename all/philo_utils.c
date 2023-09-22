@@ -1,50 +1,48 @@
 #include "../philo.h"
 
-void	ft_error(void)
+void	ft_check_philos(t_data data, t_philo *philos)
 {
-	printf("Error\n");
-	exit(0);
+	int	stop;
+	int	x;
+
+	while (1)
+	{
+		x = 0;
+		stop = 0;
+		while (x < data.nphilo)
+		{
+			if (philos[x].t_eat == data.nb_eat)
+				stop++;
+			if ((int )(ft_times() - philos[x].last_eat) >= data.t_die)
+			{
+				pthread_mutex_lock(philos[x].print);
+				printf("%ld philo %d died \n ", ft_times() - philos[x].start,
+					philos->id + 1);
+				return ;
+			}
+			x++;
+		}
+		if (stop == data.nb_eat)
+			return ;
+	}
+
 }
 
-int	ft_num(char *str)
+unsigned long	ft_times(void)
 {
-	int	i;
+	unsigned long	time;
+	struct timeval	t;
 
-	i = 0;
-	if (str[0] == '+')
-		i++;
-	while (str[i])
-	{
-		if (!(str[i] >= 48 && str[i] <= 57))
-			return (0);
-		i++;
-	}
-	return (1);
+	gettimeofday(&t, NULL);
+	time = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	return (time);
 }
 
-int	ft_atoi(const char *str)
+void	my_sleep(unsigned long ms_time)
 {
-	unsigned long	i;
-	unsigned long	res;
-	int	s;
+	unsigned long	t;
 
-	i = 0;
-	s = 1;
-	res = 0;
-	while ((str[i] == '\n') || (str[i] == ' ') || (str[i] == '\t')
-		|| (str[i] == '\r') || (str[i] == '\v') || (str[i] == '\f'))
-		i++;
-	if ((str[i] == '-') || (str[i] == '+'))
-	{
-		if (str[i] == '-')
-			s = -1;
-		else
-			s = 1;
-		i++;
-	}
-	if ((str[i] == '-') || str[i] == '+')
-		return (0);
-	while (str[i] >= '0' && str[i] <= '9' && (str[i] != '\0'))
-		res = res * 10 + str[i++] - '0';
-	return (res * s);
+	t = ft_times();
+	while (ft_times() - t < ms_time)
+		usleep(50);
 }
